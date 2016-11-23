@@ -66,8 +66,7 @@ public class MainActivity extends AppCompatActivity {
 	protected void onStart() {
 		super.onStart();
 		Log.d(TAG, "onStart");
-		Intent intent = new Intent(this, MyService.class);
-		bindService(intent, connection, Context.BIND_AUTO_CREATE);
+		MyService.bindService(this, connection);
 	}
 
 	@Override

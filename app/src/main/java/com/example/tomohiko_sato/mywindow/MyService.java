@@ -3,6 +3,7 @@ package com.example.tomohiko_sato.mywindow;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.PixelFormat;
 import android.os.Binder;
 import android.os.Handler;
@@ -29,6 +30,11 @@ public class MyService extends Service {
 	public static void startService(Context context) {
 		Intent intent = new Intent(context, MyService.class);
 		context.startService(intent);
+	}
+
+	public static void bindService(Context context, ServiceConnection connection) {
+		Intent intent = new Intent(context, MyService.class);
+		context.bindService(intent, connection, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
