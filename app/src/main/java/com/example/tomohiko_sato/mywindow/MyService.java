@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -20,6 +21,7 @@ public class MyService extends Service {
 	private WindowManager windowManager;
 	private FrameLayout overlapView;
 	private WindowManager.LayoutParams overlapViewParams;
+	private IBinder binder = new MyServiceBinder();
 
 	public MyService() {
 	}
@@ -34,20 +36,25 @@ public class MyService extends Service {
 		Log.i(TAG, "onStartCommand Received start id " + startId + ": " + intent);
 		Toast.makeText(this, "MyService#onStartCommand", Toast.LENGTH_SHORT).show();
 		//明示的にサービスの起動、停止が決められる場合の返り値
+		return START_STICKY;
+	}
+
+	public void addView(View inflateView) {
+		overlapView.addView(inflateView);
+	}
+
+	public class MyServiceBinder extends Binder {
+		MyService getService() {
+			return MyService.this;
+		}
+	}
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		Toast.makeText(this, "MyService#onBind", Toast.LENGTH_SHORT).show();
 
 		windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-		LayoutInflater layoutInflater = LayoutInflater.from(this);
 		overlapView = new FrameLayout(getApplicationContext());
-		View inflateView = layoutInflater.inflate(R.layout.layout_external, null);
-		Button closeButton = (Button) inflateView.findViewById(R.id.close_button);
-		closeButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Log.d(TAG, "onclick");
-			}
-		});
-		((FrameLayout) overlapView).addView(inflateView);
-
 		overlapViewParams = new WindowManager.LayoutParams(
 				WindowManager.LayoutParams.WRAP_CONTENT,
 				WindowManager.LayoutParams.WRAP_CONTENT,
@@ -67,14 +74,8 @@ public class MyService extends Service {
 			}
 		}, 10 * 1000);
 
-		return START_STICKY;
-	}
 
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		// TODO: Return the communication channel to the service.
-		throw new UnsupportedOperationException("Not yet implemented");
+		return binder;
 	}
 
 	@Override
