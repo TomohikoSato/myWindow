@@ -4,10 +4,13 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -35,7 +38,16 @@ public class MyService extends Service {
 		windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 		LayoutInflater layoutInflater = LayoutInflater.from(this);
 		overlapView = new FrameLayout(getApplicationContext());
-		((FrameLayout) overlapView).addView(layoutInflater.inflate(R.layout.layout_external, null));
+		View inflateView = layoutInflater.inflate(R.layout.layout_external, null);
+		Button closeButton = (Button) inflateView.findViewById(R.id.close_button);
+		closeButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, "onclick");
+			}
+		});
+		((FrameLayout) overlapView).addView(inflateView);
+
 		overlapViewParams = new WindowManager.LayoutParams(
 				WindowManager.LayoutParams.WRAP_CONTENT,
 				WindowManager.LayoutParams.WRAP_CONTENT,
@@ -46,6 +58,14 @@ public class MyService extends Service {
 				PixelFormat.TRANSLUCENT);  // viewを透明にする
 
 		windowManager.addView(overlapView, overlapViewParams);
+
+		new Handler().postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				windowManager.removeView(overlapView);
+				stopSelf();
+			}
+		}, 10 * 1000);
 
 		return START_STICKY;
 	}
