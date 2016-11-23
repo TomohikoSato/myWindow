@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 	private ServiceConnection connection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
+			Log.d(TAG, "onserviceconnected");
 			MyService.MyServiceBinder binder = (MyService.MyServiceBinder) service;
 			myService = binder.getService();
 			bound = true;
@@ -33,10 +34,10 @@ public class MainActivity extends AppCompatActivity {
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
+			Log.d(TAG, "onservicedisconnected");
 			bound = false;
 		}
 	};
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 		toExternalButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				MyService.startService(MainActivity.this);
+				//MyService.startService(MainActivity.this);
 				View inflateView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_external, null);
 				Button closeButton = (Button) inflateView.findViewById(R.id.close_button);
 				closeButton.setOnClickListener(new View.OnClickListener() {
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
+		Log.d(TAG, "onStart");
 		Intent intent = new Intent(this, MyService.class);
 		bindService(intent, connection, Context.BIND_AUTO_CREATE);
 	}
@@ -71,10 +73,17 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onStop() {
 		super.onStop();
+		Log.d(TAG, "onStop");
 		if (bound) {
 			unbindService(connection);
 			bound = false;
 		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		Log.d(TAG, "onDestroy");
 	}
 
 	private int toPixel(int dp) {

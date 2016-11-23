@@ -52,6 +52,7 @@ public class MyService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		Toast.makeText(this, "MyService#onBind", Toast.LENGTH_SHORT).show();
+		Log.d(TAG, "MyService onBind");
 
 		windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 		overlapView = new FrameLayout(getApplicationContext());
@@ -69,6 +70,7 @@ public class MyService extends Service {
 		new Handler().postDelayed(new Runnable() {
 			@Override
 			public void run() {
+				Log.d(TAG, "removeView");
 				windowManager.removeView(overlapView);
 				stopSelf();
 			}
@@ -76,6 +78,12 @@ public class MyService extends Service {
 
 
 		return binder;
+	}
+
+	@Override
+	public boolean onUnbind(Intent intent) {
+		Log.d(TAG, "onUnbind");
+		return super.onUnbind(intent);
 	}
 
 	@Override
