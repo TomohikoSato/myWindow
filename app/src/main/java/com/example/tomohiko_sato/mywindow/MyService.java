@@ -37,8 +37,8 @@ public class MyService extends Service {
 
 		windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 		LayoutInflater layoutInflater = LayoutInflater.from(this);
-		//overlapView = new FrameLayout(getApplicationContext());
-		final View inflateView = layoutInflater.inflate(R.layout.layout_external, null);
+		overlapView = new FrameLayout(getApplicationContext());
+		View inflateView = layoutInflater.inflate(R.layout.layout_external, null);
 		Button closeButton = (Button) inflateView.findViewById(R.id.close_button);
 		closeButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -46,7 +46,7 @@ public class MyService extends Service {
 				Log.d(TAG, "onclick");
 			}
 		});
-		//overlapView.addView(inflateView);
+		((FrameLayout) overlapView).addView(inflateView);
 
 		overlapViewParams = new WindowManager.LayoutParams(
 				WindowManager.LayoutParams.WRAP_CONTENT,
@@ -57,12 +57,12 @@ public class MyService extends Service {
 						WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, // モーダル以外のタッチを背後のウィンドウへ送信
 				PixelFormat.TRANSLUCENT);  // viewを透明にする
 
-		windowManager.addView(inflateView, overlapViewParams);
+		windowManager.addView(overlapView, overlapViewParams);
 
 		new Handler().postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				windowManager.removeView(inflateView);
+				windowManager.removeView(overlapView);
 				stopSelf();
 			}
 		}, 10 * 1000);
