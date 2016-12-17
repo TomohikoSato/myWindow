@@ -13,6 +13,7 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -63,26 +64,33 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
 
     boolean pausing = false;
 
+
     @Override
     protected void onPause() {
         Log.d(TAG, "onPause isPlaying 1: " + youTubePlayer.isPlaying());
         //super.onPause();
-        super.onPause();
 
-        if (!pausing) {
-            try {
+
+        try {
+            Field field = MainActivity.class.getSuperclass().getDeclaredField("b");
+            field.setAccessible(true);
+            YouTubePlayerView ypv = (YouTubePlayerView) field.get(this);
+            field.set(this, null);
+            super.onPause();
+            field.set(this, ypv);
+
+/*
                 Method method = MainActivity.class.getSuperclass().getSuperclass().getDeclaredMethod("onPause");
                 method.setAccessible(true);
                 method.invoke(this);
-                pausing = true;
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
+*/
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
         }
+
         //youTubePlayer.play();
         Log.d(TAG, "onPause isPlaying 2: " + youTubePlayer.isPlaying());
     }
