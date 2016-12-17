@@ -27,6 +27,23 @@ public class MyService extends Service {
     public MyService() {
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        overlapView = new FrameLayout(this);
+        overlapViewParams = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,       // アプリケーションのTOPに配置
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |  // フォーカスを当てない(下の画面の操作がd系なくなるため)
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN |        // OverlapするViewを全画面表示
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, // モーダル以外のタッチを背後のウィンドウへ送信
+                PixelFormat.TRANSLUCENT);  // viewを透明にする
+
+        windowManager.addView(overlapView, overlapViewParams);
+    }
+
     public static void startService(Context context) {
         Intent intent = new Intent(context, MyService.class);
         context.startService(intent);
@@ -66,21 +83,6 @@ public class MyService extends Service {
     public IBinder onBind(Intent intent) {
         Toast.makeText(this, "MyService#onBind", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "MyService onBind");
-
-        if (windowManager == null) {
-            windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-            overlapView = new FrameLayout(getApplicationContext());
-            overlapViewParams = new WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,       // アプリケーションのTOPに配置
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |  // フォーカスを当てない(下の画面の操作がd系なくなるため)
-                            WindowManager.LayoutParams.FLAG_FULLSCREEN |        // OverlapするViewを全画面表示
-                            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, // モーダル以外のタッチを背後のウィンドウへ送信
-                    PixelFormat.TRANSLUCENT);  // viewを透明にする
-
-            windowManager.addView(overlapView, overlapViewParams);
-        }
 
         return binder;
     }

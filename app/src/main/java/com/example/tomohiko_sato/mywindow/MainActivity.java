@@ -65,7 +65,6 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
 
     @Override
     protected void onPause() {
-        Log.d(TAG, "onPause isPlaying 1: " + youTubePlayer.isPlaying());
         //super.onPause();
 
 
@@ -85,22 +84,16 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
         }
 
         //youTubePlayer.play();
-        Log.d(TAG, "onPause isPlaying 2: " + youTubePlayer.isPlaying());
     }
 
     @Override
     protected void onStop() {
-        Log.d(TAG, "onStop isPlaying: " + youTubePlayer.isPlaying());
         super.onStop();
         Log.d(TAG, "onStop");
         if (isBound) {
             unbindService(connection);
             isBound = false;
         }
-        Log.d(TAG, "onStop isPlaying: " + youTubePlayer.isPlaying());
-
-        Log.d(TAG, "onStop isPlaying: " + youTubePlayer.isPlaying());
-
     }
 
     @Override
