@@ -46,11 +46,23 @@ public class MyService extends Service {
 	}
 
 	public void addView(View inflateView) {
+		overlapView.addView(inflateView);
+		windowManager.updateViewLayout(overlapView, overlapViewParams);
+	}
+
+	public class MyServiceBinder extends Binder {
+		MyService getService() {
+			return MyService.this;
+		}
+	}
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		Toast.makeText(this, "MyService#onBind", Toast.LENGTH_SHORT).show();
+		Log.d(TAG, "MyService onBind");
+
 		windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 		overlapView = new FrameLayout(getApplicationContext());
-
-		overlapView.addView(inflateView);
-
 		overlapViewParams = new WindowManager.LayoutParams(
 				WindowManager.LayoutParams.WRAP_CONTENT,
 				WindowManager.LayoutParams.WRAP_CONTENT,
@@ -70,20 +82,6 @@ public class MyService extends Service {
 				stopSelf();
 			}
 		}, 10 * 1000);
-
-	}
-
-	public class MyServiceBinder extends Binder {
-		MyService getService() {
-			return MyService.this;
-		}
-	}
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		Toast.makeText(this, "MyService#onBind", Toast.LENGTH_SHORT).show();
-		Log.d(TAG, "MyService onBind");
-
 
 
 		return binder;
