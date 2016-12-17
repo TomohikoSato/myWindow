@@ -14,8 +14,6 @@ import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener {
     private final static String TAG = MainActivity.class.getSimpleName();
@@ -45,7 +43,7 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
             @Override
             public void onClick(View v) {
                 if (isBound) {
-                    YouTubePlayerView playerView = (YouTubePlayerView) LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_external, null);
+                    YouTubePlayerView playerView = (YouTubePlayerView) LayoutInflater.from(MainActivity.this).inflate(R.layout.external_player, null);
                     playerView.initialize(Key.Youtube.API_KEY, MainActivity.this);
 
                     myService.addView(playerView);
@@ -79,11 +77,6 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
             super.onPause();
             field.set(this, ypv);
 
-/*
-                Method method = MainActivity.class.getSuperclass().getSuperclass().getDeclaredMethod("onPause");
-                method.setAccessible(true);
-                method.invoke(this);
-*/
 
         } catch (IllegalAccessException e) {
             e.printStackTrace();
