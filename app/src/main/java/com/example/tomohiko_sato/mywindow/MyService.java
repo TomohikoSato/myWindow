@@ -17,85 +17,84 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 public class MyService extends Service {
-	private final static String TAG = MyService.class.getSimpleName();
+    private final static String TAG = MyService.class.getSimpleName();
 
-	private WindowManager windowManager;
-	private FrameLayout overlapView;
-	private WindowManager.LayoutParams overlapViewParams;
-	private IBinder binder = new MyServiceBinder();
+    private WindowManager windowManager;
+    private FrameLayout overlapView;
+    private WindowManager.LayoutParams overlapViewParams;
+    private IBinder binder = new MyServiceBinder();
 
-	public MyService() {
-	}
+    public MyService() {
+    }
 
-	public static void startService(Context context) {
-		Intent intent = new Intent(context, MyService.class);
-		context.startService(intent);
-	}
+    public static void startService(Context context) {
+        Intent intent = new Intent(context, MyService.class);
+        context.startService(intent);
+    }
 
-	public static void bindService(Context context, ServiceConnection connection) {
-		Intent intent = new Intent(context, MyService.class);
-		context.bindService(intent, connection, Context.BIND_AUTO_CREATE);
-	}
+    public static void bindService(Context context, ServiceConnection connection) {
+        Intent intent = new Intent(context, MyService.class);
+        context.bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
 
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.i(TAG, "onStartCommand Received start id " + startId + ": " + intent);
-		Toast.makeText(this, "MyService#onStartCommand", Toast.LENGTH_SHORT).show();
-		//明示的にサービスの起動、停止が決められる場合の返り値
-		return START_STICKY;
-	}
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "onStartCommand Received start id " + startId + ": " + intent);
+        Toast.makeText(this, "MyService#onStartCommand", Toast.LENGTH_SHORT).show();
+        //明示的にサービスの起動、停止が決められる場合の返り値
 
-	public void addView(View inflateView) {
-		overlapView.addView(inflateView);
-		windowManager.updateViewLayout(overlapView, overlapViewParams);
-	}
+        return START_STICKY;
+    }
 
-	public class MyServiceBinder extends Binder {
-		MyService getService() {
-			return MyService.this;
-		}
-	}
+    View inflateView;
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		Toast.makeText(this, "MyService#onBind", Toast.LENGTH_SHORT).show();
-		Log.d(TAG, "MyService onBind");
+    public void addView(View inflateView) {
+        if (this.inflateView == null) {
+            this.inflateView = inflateView;
+            overlapView.addView(inflateView);
+            windowManager.updateViewLayout(overlapView, overlapViewParams);
+        }
+    }
 
-		windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-		overlapView = new FrameLayout(getApplicationContext());
-		overlapViewParams = new WindowManager.LayoutParams(
-				WindowManager.LayoutParams.WRAP_CONTENT,
-				WindowManager.LayoutParams.WRAP_CONTENT,
-				WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,       // アプリケーションのTOPに配置
-				WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |  // フォーカスを当てない(下の画面の操作がd系なくなるため)
-						WindowManager.LayoutParams.FLAG_FULLSCREEN |        // OverlapするViewを全画面表示
-						WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, // モーダル以外のタッチを背後のウィンドウへ送信
-				PixelFormat.TRANSLUCENT);  // viewを透明にする
+    public class MyServiceBinder extends Binder {
+        MyService getService() {
+            return MyService.this;
+        }
+    }
 
-		windowManager.addView(overlapView, overlapViewParams);
+    @Override
+    public IBinder onBind(Intent intent) {
+        Toast.makeText(this, "MyService#onBind", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "MyService onBind");
 
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				Log.d(TAG, "removeView");
-				windowManager.removeView(overlapView);
-				stopSelf();
-			}
-		}, 10 * 1000);
+        if (windowManager == null) {
+            windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+            overlapView = new FrameLayout(getApplicationContext());
+            overlapViewParams = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,       // アプリケーションのTOPに配置
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |  // フォーカスを当てない(下の画面の操作がd系なくなるため)
+                            WindowManager.LayoutParams.FLAG_FULLSCREEN |        // OverlapするViewを全画面表示
+                            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, // モーダル以外のタッチを背後のウィンドウへ送信
+                    PixelFormat.TRANSLUCENT);  // viewを透明にする
 
+            windowManager.addView(overlapView, overlapViewParams);
+        }
 
-		return binder;
-	}
+        return binder;
+    }
 
-	@Override
-	public boolean onUnbind(Intent intent) {
-		Log.d(TAG, "onUnbind");
-		return super.onUnbind(intent);
-	}
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.d(TAG, "onUnbind");
+        return super.onUnbind(intent);
+    }
 
-	@Override
-	public void onDestroy() {
-		Log.i(TAG, "onDestroy");
-		Toast.makeText(this, "MyService#onDestroy", Toast.LENGTH_SHORT).show();
-	}
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, "onDestroy");
+        Toast.makeText(this, "MyService#onDestroy", Toast.LENGTH_SHORT).show();
+        windowManager.removeView(overlapView);
+    }
 }
