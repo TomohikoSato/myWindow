@@ -10,7 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.android.youtube.player.YouTubeBaseActivity;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerView;
+
+public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener {
     private final static String TAG = MainActivity.class.getSimpleName();
 
     private boolean isBound = false;
@@ -34,21 +39,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button toExternalButton = (Button) findViewById(R.id.to_external);
-        toExternalButton.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.to_external).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isBound) {
-                    View inflateView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_external, null);
-                    Button closeButton = (Button) inflateView.findViewById(R.id.close_button);
-                    closeButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Log.d(TAG, "onclick");
-                        }
-                    });
-
-                    myService.addView(inflateView);
+                    YouTubePlayerView playerView = (YouTubePlayerView) LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_external, null);
+                    playerView.initialize(Key.Youtube.API_KEY, MainActivity.this);
+                    myService.addView(playerView);
                 }
             }
         });
@@ -75,5 +72,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
+    }
+
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+        youTubePlayer.loadVideo("HFlgNoUsr4k");
+    }
+
+    @Override
+    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+
     }
 }
