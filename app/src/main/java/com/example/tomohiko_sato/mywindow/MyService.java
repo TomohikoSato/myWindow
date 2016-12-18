@@ -6,22 +6,21 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.PixelFormat;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 public class MyService extends Service {
     private final static String TAG = MyService.class.getSimpleName();
 
     private WindowManager windowManager;
-    private FrameLayout overlapView;
-    private WindowManager.LayoutParams overlapViewParams;
+//    private FrameLayout overlapView;
+    View inflateView;
+    private WindowManager.LayoutParams wmParams;
     private IBinder binder = new MyServiceBinder();
 
     public MyService() {
@@ -33,11 +32,11 @@ public class MyService extends Service {
     public void onCreate() {
         super.onCreate();
         windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        overlapView = new FrameLayout(this);
-        overlapView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+//        overlapView = new FrameLayout(this);
+//        overlapView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
         View inflateView = LayoutInflater.from(this).inflate(R.layout.trash, null);
-        overlapView.addView(inflateView);
-        overlapViewParams = new WindowManager.LayoutParams(
+//        overlapView.addView(inflateView);
+        wmParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,       // アプリケーションのTOPに配置
@@ -45,8 +44,9 @@ public class MyService extends Service {
                         WindowManager.LayoutParams.FLAG_FULLSCREEN |        // OverlapするViewを全画面表示
                         WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, // モーダル以外のタッチを背後のウィンドウへ送信
                 PixelFormat.TRANSLUCENT);  // viewを透明にする
+        wmParams.gravity = Gravity.BOTTOM;
 
-        windowManager.addView(overlapView, overlapViewParams);
+        windowManager.addView(inflateView, wmParams);
     }
 
     public static void startService(Context context) {
@@ -68,13 +68,12 @@ public class MyService extends Service {
         return START_STICKY;
     }
 
-    View inflateView;
 
     public void addView(View inflateView) {
         if (this.inflateView == null) {
             this.inflateView = inflateView;
-            overlapView.addView(inflateView);
-            windowManager.updateViewLayout(overlapView, overlapViewParams);
+//            overlapView.addView(inflateView);
+//            windowManager.updateViewLayout(overlapView, wmParams);
         }
     }
 
@@ -102,6 +101,6 @@ public class MyService extends Service {
     public void onDestroy() {
         Log.i(TAG, "onDestroy");
         Toast.makeText(this, "MyService#onDestroy", Toast.LENGTH_SHORT).show();
-        windowManager.removeView(overlapView);
+        windowManager.removeView(inflateView);
     }
 }
