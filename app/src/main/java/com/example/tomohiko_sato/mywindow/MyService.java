@@ -35,7 +35,8 @@ public class MyService extends Service {
         windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         overlapView = new FrameLayout(this);
         overlapView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-        overlapView.addView(LayoutInflater.from(this).inflate(R.layout.trash, null));
+        View inflateView = LayoutInflater.from(this).inflate(R.layout.trash, null);
+        overlapView.addView(inflateView);
         overlapViewParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,

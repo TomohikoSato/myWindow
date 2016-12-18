@@ -17,6 +17,6 @@ public class Main2Activity extends AppCompatActivity {
         super.onResume();
 
         WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        wm.addView();
+//        wm.addView();
     }
 }
