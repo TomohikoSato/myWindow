@@ -18,7 +18,7 @@ public class MyService extends Service {
     private final static String TAG = MyService.class.getSimpleName();
 
     private WindowManager windowManager;
-//    private FrameLayout overlapView;
+    //    private FrameLayout overlapView;
     View inflateView;
     private WindowManager.LayoutParams wmParams;
     private IBinder binder = new MyServiceBinder();
@@ -41,8 +41,7 @@ public class MyService extends Service {
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,       // アプリケーションのTOPに配置
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |  // フォーカスを当てない(下の画面の操作がd系なくなるため)
-                        WindowManager.LayoutParams.FLAG_FULLSCREEN |        // OverlapするViewを全画面表示
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, // モーダル以外のタッチを背後のウィンドウへ送信
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN,        // OverlapするViewを全画面表示
                 PixelFormat.TRANSLUCENT);  // viewを透明にする
         wmParams.gravity = Gravity.BOTTOM;
 
