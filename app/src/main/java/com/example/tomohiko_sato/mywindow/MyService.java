@@ -28,24 +28,35 @@ public class MyService extends Service {
     }
 
     View view;
-    FrameLayout overlapView;
+    DraggableView overlapView;
 
     @Override
     public void onCreate() {
         super.onCreate();
         windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        overlapView = new FrameLayout(this);
-        overlapView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        overlapView = new DraggableView(this);
+        overlapView.setOnMoveListener(new DraggableView.OnMoveListener() {
+            @Override
+            public void onMove(float x, float y) {
+                Log.d("x", Float.toString(x));
+                Log.d("y", Float.toString(y));
+                wmParams.x = (int) x;
+                wmParams.y = (int) y;
+                windowManager.updateViewLayout(overlapView, wmParams);
+            }
+        });
+
 //        View inflateView = LayoutInflater.from(this).inflate(R.layout.trash, null);
 //        overlapView.addView(inflateView);
         wmParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,       // アプリケーションのTOPに配置
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |  // フォーカスを当てない(下の画面の操作がd系なくなるため)
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |  // フォーカスを当てない(下の画面の操作ができなくなるため)
                         WindowManager.LayoutParams.FLAG_FULLSCREEN,        // OverlapするViewを全画面表示
                 PixelFormat.TRANSLUCENT);  // viewを透明にする
-        wmParams.gravity = Gravity.BOTTOM;
+        wmParams.x = 0;
+        wmParams.y = 0;
 
         windowManager.addView(overlapView, wmParams);
     }
