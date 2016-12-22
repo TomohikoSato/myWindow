@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 public class MyService extends Service {
@@ -27,14 +28,15 @@ public class MyService extends Service {
     }
 
     View view;
+    FrameLayout overlapView;
 
     @Override
     public void onCreate() {
         super.onCreate();
         windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-//        overlapView = new FrameLayout(this);
-//        overlapView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-        View inflateView = LayoutInflater.from(this).inflate(R.layout.trash, null);
+        overlapView = new FrameLayout(this);
+        overlapView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+//        View inflateView = LayoutInflater.from(this).inflate(R.layout.trash, null);
 //        overlapView.addView(inflateView);
         wmParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -45,7 +47,7 @@ public class MyService extends Service {
                 PixelFormat.TRANSLUCENT);  // viewを透明にする
         wmParams.gravity = Gravity.BOTTOM;
 
-        windowManager.addView(inflateView, wmParams);
+        windowManager.addView(overlapView, wmParams);
     }
 
     public static void startService(Context context) {
@@ -71,8 +73,9 @@ public class MyService extends Service {
     public void addView(View inflateView) {
         if (this.inflateView == null) {
             this.inflateView = inflateView;
-//            overlapView.addView(inflateView);
-//            windowManager.updateViewLayout(overlapView, wmParams);
+//            windowManager.updateViewLayout(inflateView, wmParams);
+            overlapView.addView(inflateView);
+            windowManager.updateViewLayout(overlapView, wmParams);
         }
     }
 
