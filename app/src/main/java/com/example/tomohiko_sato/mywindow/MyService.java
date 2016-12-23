@@ -4,61 +4,34 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.PixelFormat;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.Toast;
+
+import com.google.android.youtube.player.YouTubePlayerView;
 
 public class MyService extends Service {
     private final static String TAG = MyService.class.getSimpleName();
 
     private WindowManager windowManager;
-    //    private FrameLayout overlapView;
-    View inflateView;
+    private DraggableView draggableView;
+    private YouTubePlayerView playerView;
     private WindowManager.LayoutParams wmParams;
     private IBinder binder = new MyServiceBinder();
 
     public MyService() {
     }
 
-    View view;
-    DraggableView overlapView;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
         windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        overlapView = new DraggableView(this);
-        overlapView.setOnMoveListener(new DraggableView.OnMoveListener() {
-            @Override
-            public void onMove(float x, float y) {
-                Log.d("x", Float.toString(x));
-                Log.d("y", Float.toString(y));
-                wmParams.x = (int) x;
-                wmParams.y = (int) y;
-                windowManager.updateViewLayout(overlapView, wmParams);
-            }
-        });
-
-//        View inflateView = LayoutInflater.from(this).inflate(R.layout.trash, null);
-//        overlapView.addView(inflateView);
-        wmParams = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,       // アプリケーションのTOPに配置
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |  // フォーカスを当てない(下の画面の操作ができなくなるため)
-                        WindowManager.LayoutParams.FLAG_FULLSCREEN,        // OverlapするViewを全画面表示
-                PixelFormat.TRANSLUCENT);  // viewを透明にする
-        wmParams.x = 0;
-        wmParams.y = 0;
-
-        windowManager.addView(overlapView, wmParams);
+        draggableView = new DraggableView(this);
     }
 
     public static void startService(Context context) {
@@ -81,11 +54,10 @@ public class MyService extends Service {
     }
 
 
-    public void addView(View inflateView) {
-        if (this.inflateView == null) {
-            this.inflateView = inflateView;
-            overlapView.addView(inflateView);
-            windowManager.updateViewLayout(overlapView, wmParams);
+    public void addView(YouTubePlayerView playerView) {
+        if (this.playerView == null) {
+            this.playerView = playerView;
+            draggableView.addPlayerView(playerView);
         }
     }
 
@@ -113,6 +85,6 @@ public class MyService extends Service {
     public void onDestroy() {
         Log.i(TAG, "onDestroy");
         Toast.makeText(this, "MyService#onDestroy", Toast.LENGTH_SHORT).show();
-        windowManager.removeView(inflateView);
+        windowManager.removeView(draggableView);
     }
 }
