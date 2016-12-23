@@ -84,7 +84,6 @@ public class MyService extends Service {
     public void addView(View inflateView) {
         if (this.inflateView == null) {
             this.inflateView = inflateView;
-//            windowManager.updateViewLayout(inflateView, wmParams);
             overlapView.addView(inflateView);
             windowManager.updateViewLayout(overlapView, wmParams);
         }

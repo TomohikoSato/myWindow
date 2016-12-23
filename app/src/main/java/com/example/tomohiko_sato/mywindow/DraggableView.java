@@ -48,33 +48,35 @@ public class DraggableView extends FrameLayout {
         this.listener = listener;
     }
 
-    float dx, dy = 0f;
+    float pressedX, pressedY = 0f;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
         switch (event.getAction()) {
             case ACTION_DOWN:
-                dx = getX() - event.getRawX();
-                dy = getY() - event.getRawY();
-                Log.d("ACTION_DOWN", Float.toString(dx));
-                Log.d("ACTION_DOWN", Float.toString(dy));
+                pressedX = getX() - event.getRawX();
+                pressedY = getY() - event.getRawY();
+                Log.d("ACTION_DOWN", Float.toString(pressedX));
+                Log.d("ACTION_DOWN", Float.toString(pressedY));
                 break;
             case ACTION_MOVE:
-                if (dx == 0f && dy == 0f) {
+                if (pressedX == 0f && pressedY == 0f) {
                     break;
                 }
-                float x = event.getRawX() + dx;
-                float y = event.getRawY() + dy;
+                float x = (event.getRawX() + pressedX) / 2; // FIXME: なぜ2で割るのか不明
+                float y = (event.getRawY() + pressedY) / 2;
                 Log.d("ACTION_MOVE", Float.toString(x));
                 Log.d("ACTION_MOVE", Float.toString(y));
+
                 setX(x);
                 setY(y);
                 listener.onMove(x, y);
                 break;
             case ACTION_UP:
-                dx = 0f;
-                dy = 0f;
+                pressedX = 0f;
+                pressedY = 0f;
+                break;
             default:
                 return false;
         }
