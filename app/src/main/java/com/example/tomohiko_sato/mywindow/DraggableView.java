@@ -40,6 +40,15 @@ public class DraggableView extends FrameLayout {
         wm.updateViewLayout(this, wmParams);
     }
 
+    interface OnMoveListener {
+        void onMove(float x, float y);
+    }
+
+    OnMoveListener listener;
+    public void setOnMoveListener(OnMoveListener listener) {
+        this.listener = listener;
+    }
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         return true;

@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -26,13 +27,30 @@ public class MyService extends Service {
     public MyService() {
     }
 
-
-
     @Override
     public void onCreate() {
         super.onCreate();
         windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         draggableView = new DraggableView(this);
+        /*draggableView.setOnMoveListener(new DraggableView.OnMoveListener() {
+            @Override
+            public void onMove(float x, float y) {
+                trashView.isIntercect(x, y)
+            }
+        });*/
+        draggableView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (trashView.contains(event.getRawX(), event.getRawY())) {
+                        windowManager.removeView(draggableView);
+                    }
+                }
+                return false;
+            }
+        });
+
+
         trashView = new TrashView(this);
     }
 
