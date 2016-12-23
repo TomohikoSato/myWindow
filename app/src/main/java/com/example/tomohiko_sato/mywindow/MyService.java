@@ -18,6 +18,7 @@ public class MyService extends Service {
 
     private WindowManager windowManager;
     private DraggableView draggableView;
+    private TrashView trashView;
     private YouTubePlayerView playerView;
     private WindowManager.LayoutParams wmParams;
     private IBinder binder = new MyServiceBinder();
@@ -32,6 +33,7 @@ public class MyService extends Service {
         super.onCreate();
         windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         draggableView = new DraggableView(this);
+        trashView = new TrashView(this);
     }
 
     public static void startService(Context context) {
