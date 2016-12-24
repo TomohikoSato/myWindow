@@ -55,7 +55,7 @@ public class MyService extends Service {
     }
 
 
-    public void addView(YouTubePlayerView playerView) {
+    public void addView(final YouTubePlayerView playerView) {
         if (this.playerView == null) {
             draggableView = new DraggableView(this);
             draggableView.setOnTouchListener(new View.OnTouchListener() {
@@ -69,6 +69,7 @@ public class MyService extends Service {
                         trashRect = getRectInScreen(trashView);
 
                         if (Rect.intersects(draggableRect, trashRect)) {
+
                             removeAllView();
                         }
                     }

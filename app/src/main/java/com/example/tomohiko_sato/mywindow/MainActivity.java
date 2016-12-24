@@ -98,6 +98,69 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
         this.youTubePlayer = youTubePlayer;
         youTubePlayer.loadVideo("HFlgNoUsr4k");
+        youTubePlayer.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
+            private final String TAG = YouTubePlayer.PlayerStateChangeListener.class.getSimpleName();
+
+            @Override
+            public void onLoading() {
+                Log.d(TAG, "onLoading");
+            }
+
+            @Override
+            public void onLoaded(String s) {
+                Log.d(TAG, "onLoaded: " + s);
+            }
+
+            @Override
+            public void onAdStarted() {
+                Log.d(TAG, "onAdStarted");
+            }
+
+            @Override
+            public void onVideoStarted() {
+                Log.d(TAG, "onVideoStarted");
+            }
+
+            @Override
+            public void onVideoEnded() {
+                Log.d(TAG, "onVideoEnded");
+            }
+
+            @Override
+            public void onError(YouTubePlayer.ErrorReason errorReason) {
+                Log.d(TAG, "onError: " + errorReason.toString());
+            }
+        });
+
+        youTubePlayer.setPlaybackEventListener(new YouTubePlayer.PlaybackEventListener() {
+            private final String TAG = YouTubePlayer.PlaybackEventListener.class.getSimpleName();
+
+            @Override
+            public void onPlaying() {
+                Log.d(TAG, "onPlaying");
+            }
+
+            @Override
+            public void onPaused() {
+                Log.d(TAG, "onPaused");
+            }
+
+            @Override
+            public void onStopped() {
+                Log.d(TAG, "onStopped");
+            }
+
+            @Override
+            public void onBuffering(boolean b) {
+                Log.d(TAG, "onStopped: " + b);
+            }
+
+            @Override
+            public void onSeekTo(int i) {
+                Log.d(TAG, "onSeekTo: " + i);
+            }
+        });
+
     }
 
     @Override
