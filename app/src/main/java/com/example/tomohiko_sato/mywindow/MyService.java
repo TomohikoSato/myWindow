@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubePlayerView;
@@ -23,7 +22,6 @@ public class MyService extends Service {
     private DraggableView draggableView;
     private TrashView trashView;
     private YouTubePlayerView playerView;
-    private WindowManager.LayoutParams wmParams;
     private IBinder binder = new MyServiceBinder();
 
     public MyService() {
@@ -41,10 +39,6 @@ public class MyService extends Service {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-/*
-                    draggableView.getGlobalVisibleRect(draggableRect);
-                    trashView.getGlobalVisibleRect(trashRect);
-*/
                     draggableRect = getRectInScreen(draggableView);
                     trashRect = getRectInScreen(trashView);
 

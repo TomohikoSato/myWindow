@@ -60,14 +60,9 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
         MyService.bindService(this, connection);
     }
 
-    boolean pausing = false;
-
-
     @Override
     protected void onPause() {
-        //super.onPause();
-
-
+//        super.onPause();
         try {
             Field field = MainActivity.class.getSuperclass().getDeclaredField("b");
             field.setAccessible(true);
@@ -75,15 +70,11 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
             field.set(this, null);
             super.onPause();
             field.set(this, ypv);
-
-
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
-
-        //youTubePlayer.play();
     }
 
     @Override
@@ -107,74 +98,10 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
         this.youTubePlayer = youTubePlayer;
-        youTubePlayer.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
-            private final String TAG = YouTubePlayer.PlayerStateChangeListener.class.getSimpleName();
-
-            @Override
-            public void onLoading() {
-                Log.d(TAG, "onLoading");
-            }
-
-            @Override
-            public void onLoaded(String s) {
-                Log.d(TAG, "onLoaded: " + s);
-            }
-
-            @Override
-            public void onAdStarted() {
-                Log.d(TAG, "onAdStarted");
-            }
-
-            @Override
-            public void onVideoStarted() {
-                Log.d(TAG, "onVideoStarted");
-            }
-
-            @Override
-            public void onVideoEnded() {
-                Log.d(TAG, "onVideoEnded");
-            }
-
-            @Override
-            public void onError(YouTubePlayer.ErrorReason errorReason) {
-                Log.d(TAG, "onError: " + errorReason.toString());
-            }
-        });
-
-        youTubePlayer.setPlaybackEventListener(new YouTubePlayer.PlaybackEventListener() {
-            private final String TAG = YouTubePlayer.PlaybackEventListener.class.getSimpleName();
-
-            @Override
-            public void onPlaying() {
-                Log.d(TAG, "onPlaying");
-            }
-
-            @Override
-            public void onPaused() {
-                Log.d(TAG, "onPaused");
-            }
-
-            @Override
-            public void onStopped() {
-                Log.d(TAG, "onStopped");
-            }
-
-            @Override
-            public void onBuffering(boolean b) {
-
-            }
-
-            @Override
-            public void onSeekTo(int i) {
-
-            }
-        });
-
         youTubePlayer.loadVideo("HFlgNoUsr4k");
     }
 
     @Override
     public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
-
     }
 }

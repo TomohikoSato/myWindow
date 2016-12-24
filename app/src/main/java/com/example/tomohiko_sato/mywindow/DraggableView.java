@@ -2,8 +2,11 @@ package com.example.tomohiko_sato.mywindow;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
@@ -21,6 +24,7 @@ public class DraggableView extends FrameLayout {
 
     private final WindowManager wm;
     private final WindowManager.LayoutParams wmParams;
+    private final DisplayMetrics dm;
 
     public DraggableView(Context context) {
         super(context);
@@ -33,20 +37,13 @@ public class DraggableView extends FrameLayout {
                         WindowManager.LayoutParams.FLAG_FULLSCREEN,        // OverlapするViewを全画面表示
                 PixelFormat.TRANSLUCENT);  // viewを透明にする
         wm.addView(this, wmParams);
+        dm = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(dm);
     }
 
     public void addPlayerView(YouTubePlayerView playerView) {
-        this.addView(playerView);
+        addView(playerView, (int) (200 * dm.density), (int) (110 * dm.density));
         wm.updateViewLayout(this, wmParams);
-    }
-
-    interface OnMoveListener {
-        void onMove(float x, float y);
-    }
-
-    OnMoveListener listener;
-    public void setOnMoveListener(OnMoveListener listener) {
-        this.listener = listener;
     }
 
     @Override
