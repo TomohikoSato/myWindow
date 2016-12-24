@@ -18,11 +18,12 @@ import com.google.android.youtube.player.YouTubePlayerView;
 public class MyService extends Service {
     private final static String TAG = MyService.class.getSimpleName();
 
-    private WindowManager windowManager;
+    private WindowManager wm;
+    private final IBinder binder = new MyServiceBinder();
     private DraggableView draggableView;
     private TrashView trashView;
     private YouTubePlayerView playerView;
-    private IBinder binder = new MyServiceBinder();
+    //private final View.OnTouchListener draggableViewTouchListeer =
 
     public MyService() {
     }
@@ -30,59 +31,7 @@ public class MyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        draggableView = new DraggableView(this);
-        draggableView.setOnTouchListener(new View.OnTouchListener() {
-            Rect draggableRect = new Rect();
-            Rect trashRect = new Rect();
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    draggableRect = getRectInScreen(draggableView);
-                    trashRect = getRectInScreen(trashView);
-
-                    if (Rect.intersects(draggableRect, trashRect)) {
-                        windowManager.removeView(draggableView);
-                    }
-                }
-                return false;
-            }
-
-            private Rect getRectInScreen(View view) {
-                final int[] locationOnScreen = new int[2];
-                view.getLocationOnScreen(locationOnScreen);
-                Log.d(TAG, "location on screen : " + locationOnScreen[0] + ", " + locationOnScreen[1]);
-                int left = locationOnScreen[0];
-                int top = locationOnScreen[1];
-                Rect rect = new Rect(left, top, left + view.getWidth(), top + view.getHeight());
-                Log.d(TAG, "rect: " + rect);
-                return rect;
-            }
-
-            private void logView(View view) {
-                Log.d(TAG, "left: " + view.getLeft() + " right: " + view.getRight() + " top: " + view.getTop() + " bottom: " + view.getBottom() + " paddingleft: " + view.getPaddingLeft() + " paddingTop: " + view.getPaddingTop() + " paddingRight: " + view.getPaddingRight() + " paddingBottom: " + view.getPaddingBottom());
-                Log.d(TAG, "width: " + view.getWidth() + " height: " + view.getHeight() + " x: " + view.getX() + " y: " + view.getY());
-                Rect drawingRect = new Rect();
-                view.getDrawingRect(drawingRect);
-                Log.d(TAG, "getDrawingRect: " + drawingRect);
-
-
-                final int[] locationOnScreen = new int[2];
-                view.getLocationOnScreen(locationOnScreen);
-                Log.d(TAG, "location on screen : " + locationOnScreen[0] + ", " + locationOnScreen[1]);
-
-                final int[] locationOnWindow = new int[2];
-                view.getLocationInWindow(locationOnWindow);
-                Log.d(TAG, "location on window : " + locationOnWindow[0] + ", " + locationOnWindow[1]);
-
-                Rect rectInGlobal = new Rect();
-                view.getGlobalVisibleRect(rectInGlobal);
-                Log.d(TAG, "globalVisibleRect=" + rectInGlobal);
-            }
-        });
-
-        trashView = new TrashView(this);
+        wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
     }
 
 
@@ -108,9 +57,44 @@ public class MyService extends Service {
 
     public void addView(YouTubePlayerView playerView) {
         if (this.playerView == null) {
+            draggableView = new DraggableView(this);
+            draggableView.setOnTouchListener(new View.OnTouchListener() {
+                Rect draggableRect = new Rect();
+                Rect trashRect = new Rect();
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        draggableRect = getRectInScreen(draggableView);
+                        trashRect = getRectInScreen(trashView);
+
+                        if (Rect.intersects(draggableRect, trashRect)) {
+                            removeAllView();
+                        }
+                    }
+                    return false;
+                }
+
+                private Rect getRectInScreen(View view) {
+                    final int[] locationOnScreen = new int[2];
+                    view.getLocationOnScreen(locationOnScreen);
+                    Log.d(TAG, "location on screen : " + locationOnScreen[0] + ", " + locationOnScreen[1]);
+                    int left = locationOnScreen[0];
+                    int top = locationOnScreen[1];
+                    Rect rect = new Rect(left, top, left + view.getWidth(), top + view.getHeight());
+                    Log.d(TAG, "rect: " + rect);
+                    return rect;
+                }
+            });
+            trashView = new TrashView(this);
+
             this.playerView = playerView;
             draggableView.addPlayerView(playerView);
         }
+    }
+
+    public boolean hasPlayerView() {
+        return playerView != null;
     }
 
     public class MyServiceBinder extends Binder {
@@ -137,6 +121,14 @@ public class MyService extends Service {
     public void onDestroy() {
         Log.i(TAG, "onDestroy");
         Toast.makeText(this, "MyService#onDestroy", Toast.LENGTH_SHORT).show();
-        windowManager.removeView(draggableView);
+        removeAllView();
+    }
+
+    private void removeAllView() {
+        wm.removeView(draggableView);
+        wm.removeView(trashView);
+        draggableView = null;
+        trashView = null;
+        playerView = null;
     }
 }

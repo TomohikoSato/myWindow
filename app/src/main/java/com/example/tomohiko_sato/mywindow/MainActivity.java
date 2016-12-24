@@ -42,10 +42,9 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
         findViewById(R.id.to_external).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isBound) {
+                if (isBound && !myService.hasPlayerView()) {
                     YouTubePlayerView playerView = (YouTubePlayerView) LayoutInflater.from(MainActivity.this).inflate(R.layout.external_player, null);
                     playerView.initialize(Key.Youtube.API_KEY, MainActivity.this);
-
                     myService.addView(playerView);
                 }
             }
