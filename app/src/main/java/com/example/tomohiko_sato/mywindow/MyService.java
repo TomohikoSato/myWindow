@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 
 public class MyService extends Service {
@@ -54,9 +55,10 @@ public class MyService extends Service {
         return START_STICKY;
     }
 
-
-    public void addView(final YouTubePlayerView playerView) {
+    private YouTubePlayer player;
+    public void startPlayer(final YouTubePlayerView playerView, final YouTubePlayer player) {
         if (this.playerView == null) {
+            this.player = player;
             draggableView = new DraggableView(this);
             draggableView.setOnTouchListener(new View.OnTouchListener() {
                 Rect draggableRect = new Rect();
@@ -69,7 +71,7 @@ public class MyService extends Service {
                         trashRect = getRectInScreen(trashView);
 
                         if (Rect.intersects(draggableRect, trashRect)) {
-
+                            player.release();
                             removeAllView();
                         }
                     }

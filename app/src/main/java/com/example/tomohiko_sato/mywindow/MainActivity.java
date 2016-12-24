@@ -35,6 +35,8 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
         }
     };
 
+    private YouTubePlayerView playerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,9 +45,8 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
             @Override
             public void onClick(View v) {
                 if (isBound && !myService.hasPlayerView()) {
-                    YouTubePlayerView playerView = (YouTubePlayerView) LayoutInflater.from(MainActivity.this).inflate(R.layout.external_player, null);
+                    playerView = (YouTubePlayerView) LayoutInflater.from(MainActivity.this).inflate(R.layout.external_player, null);
                     playerView.initialize(Key.Youtube.API_KEY, MainActivity.this);
-                    myService.addView(playerView);
                 }
             }
         });
@@ -92,12 +93,13 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
         Log.d(TAG, "onDestroy");
     }
 
-    YouTubePlayer youTubePlayer;
+    private YouTubePlayer youTubePlayer;
+
 
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-        this.youTubePlayer = youTubePlayer;
         youTubePlayer.loadVideo("HFlgNoUsr4k");
+        myService.startPlayer(playerView, youTubePlayer);
         youTubePlayer.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
             private final String TAG = YouTubePlayer.PlayerStateChangeListener.class.getSimpleName();
 
